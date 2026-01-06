@@ -267,6 +267,16 @@ export const db = {
     return snap.docs.map(doc => doc.data()) as DailyLog[];
   },
 
+  async signinByUID(uid: string): Promise<User | null> {
+  const q = query(
+    collection(firestore, "users"),
+    where("uid", "==", uid)
+  );
+  const snap = await getDocs(q);
+  return snap.empty ? null : (snap.docs[0].data() as User);
+}
+,
+
   // ---------- DASHBOARD (same logic) ----------
   async getDashboardStats(userId: string) {
     const exams = await this.getExamResults(userId);

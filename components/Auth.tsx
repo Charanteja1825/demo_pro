@@ -69,7 +69,8 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
       );
 
       // 🔁 Fetch user profile from Firestore
-      const user = await db.signin(fbUser.email!);
+      let user = await db.signinByUID(fbUser.uid);
+
       if (!user) throw new Error("User profile not found");
 
       onLogin(user);
@@ -82,9 +83,11 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
 
       // 🗄️ Save profile in Firestore
       const newUser = await db.signup({
-        name: formData.name,
-        email: fbUser.email!
-      });
+  uid: fbUser.uid,              // ✅ REQUIRED
+  name: formData.name,
+  email: fbUser.email!
+});
+
 
       onLogin(newUser);
     }
@@ -167,9 +170,10 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
     try {
       const fbUser = await signinWithGoogle();
 
-      let user = await db.signin(fbUser.email!);
+    let user = await db.signinByUID(fbUser.uid);
       if (!user) {
         user = await db.signup({
+           uid: fbUser.uid,
           name: fbUser.displayName || "User",
           email: fbUser.email!
         });
