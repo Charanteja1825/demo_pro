@@ -3,10 +3,10 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCbWmcUNj-44NgvIF3mCOqYLiKCwvSbJ-0",
-  authDomain: "newcareer-lkd.firebaseapp.com",
-  projectId: "newcareer-lkd"
-
+  apiKey: "AIzaSyB7fS9LRP5NhgmkGSv0OP4OvX9pymaS0MQ",
+  authDomain: "career-9d573.firebaseapp.com",
+  projectId: "career-9d573"
+  
 
 };
 

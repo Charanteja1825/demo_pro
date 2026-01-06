@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { User, InterviewSession } from '../types';
-import { generateInterviewFeedback } from '../services/ai';
+import { generateInterviewFeedbackAPI } from '../services/api';
 import { db } from '../services/db';
 import { Video, VideoOff, Mic, MicOff, Play, Pause, CheckCircle, Loader2, Award, Zap, Smile } from 'lucide-react';
 
@@ -78,7 +78,7 @@ const MockInterviews: React.FC<MockInterviewsProps> = ({ user }) => {
     }
     
     try {
-      const aiFeedback = await generateInterviewFeedback();
+      const aiFeedback = await generateInterviewFeedbackAPI();
       const toSave = {
         userId: user.id,
         ...aiFeedback,

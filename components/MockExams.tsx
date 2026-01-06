@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { User, Question, ExamResult } from '../types';
-import { generateExam } from '../services/ai';
+import { generateExamAPI } from '../services/api';
 import { db } from '../services/db';
 // Added Target to the lucide-react imports
 import { Play, Loader2, CheckCircle, XCircle, Clock, Keyboard, ShieldCheck, Target } from 'lucide-react';
@@ -24,6 +24,9 @@ const MockExams: React.FC<MockExamsProps> = ({ user }) => {
   const [aiUsageCounter, setAiUsageCounter] = useState(0); // Simulated tracking
   const [finalResult, setFinalResult] = useState<ExamResult | null>(null);
   const [history, setHistory] = useState<ExamResult[]>([]);
+  const [codeValues, setCodeValues] = useState<Record<string, string>>({});
+  const [consoleOutputs, setConsoleOutputs] = useState<Record<string, string[]>>({});
+  const iframeRefs = useRef<Record<string, HTMLIFrameElement | undefined>>({});
 
   // Changed NodeJS.Timeout to any to avoid "Cannot find namespace 'NodeJS'" error in browser environments
   const timerRef = useRef<any>(null);
@@ -32,27 +35,42 @@ const MockExams: React.FC<MockExamsProps> = ({ user }) => {
     setLoading(true);
     setExamType(type);
     try {
-      const q = await generateExam(type);
+      const q = await generateExamAPI(type);
       // Normalize questions: ensure each question has an id and valid type
       const normalized = q.map((item) => ({
         ...item,
         id: item.id || crypto.randomUUID(),
-        type: item.type === 'mcq' ? 'mcq' : 'coding'
+        type: item.type === 'mcq' ? 'mcq' : item.type === 'explanation' ? 'explanation' : 'mcq'
       }));
+      // Ensure 8 MCQs + 2 Explanations. Shuffle to vary questions each time.
+      const shuffle = <T extends { id?: string }>(arr: T[]) => {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      };
 
-      // Ensure exactly 5 MCQs + 5 Coding if possible
-      const mcqs = normalized.filter(i => i.type === 'mcq').slice(0, 5);
-      const codings = normalized.filter(i => i.type === 'coding').slice(0, 5);
-      let combined = [...mcqs, ...codings];
+      const allMcqs = shuffle(normalized.filter(i => i.type === 'mcq'));
+      const allExplanations = shuffle(normalized.filter(i => i.type === 'explanation'));
+
+      const mcqs = allMcqs.slice(0, 8);
+      const explanations = allExplanations.slice(0, 2);
+
+      let combined = [...mcqs, ...explanations];
 
       // If AI returned fewer than required, fill from normalized list
       if (combined.length < 10) {
-        const remaining = normalized.filter(i => !combined.find(c => c.id === i.id));
+        const remaining = shuffle(normalized.filter(i => !combined.find(c => (c.id || '') === (i.id || ''))));
         for (const r of remaining) {
           if (combined.length >= 10) break;
           combined.push(r);
         }
       }
+
+      // final shuffle so order is mixed
+      combined = shuffle(combined).slice(0, 10);
 
       setQuestions(combined);
       setStage('running');
@@ -76,29 +94,125 @@ const MockExams: React.FC<MockExamsProps> = ({ user }) => {
     setTypingActivity(prev => prev + 1);
   };
 
+  // Listen for messages from sandboxed iframes (console output)
+  useEffect(() => {
+    const handler = (e: MessageEvent) => {
+      if (!e.data || e.data.type !== 'console') return;
+      const { id, output } = e.data as { id: string; output: string };
+      setConsoleOutputs(prev => ({ ...prev, [id]: [...(prev[id] || []), String(output)] }));
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, []);
+
+  const runUserCode = (id: string, code: string) => {
+    // append a run header
+    setConsoleOutputs(prev => ({ ...prev, [id]: [...(prev[id] || []), '--- Run started ---'] }));
+
+    // cleanup previous iframe if present
+    if (iframeRefs.current[id]) {
+      try { iframeRefs.current[id]!.remove(); } catch (e) {}
+      delete iframeRefs.current[id];
+    }
+
+    const iframe = document.createElement('iframe');
+    iframe.sandbox.add('allow-scripts');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+    iframeRefs.current[id] = iframe;
+
+    const safeCode = (code || '').replace(/<\/script>/gi, '<\\/script>');
+    const html = `<!doctype html><html><body><script>
+      (function(){
+        function send(msg){ parent.postMessage({type:'console', id:'${id}', output: String(msg)}, '*'); }
+        console.log = function(){ send(Array.prototype.slice.call(arguments).join(' ')); };
+        console.error = console.log;
+        console.info = console.log;
+        try {
+          ${safeCode}
+        } catch(e) { send('Error: ' + (e && e.message ? e.message : e)); }
+      })();\n<\/script></body></html>`;
+
+    try {
+      const doc = iframe.contentWindow?.document;
+      if (doc) {
+        doc.open();
+        doc.write(html);
+        doc.close();
+      }
+    } catch (e) {
+      setConsoleOutputs(prev => ({ ...prev, [id]: [...(prev[id] || []), 'Error launching sandbox: ' + String(e)] }));
+    }
+  };
+
+  const clearConsole = (id: string) => setConsoleOutputs(prev => ({ ...prev, [id]: [] }));
+
+  const stopUserCode = (id: string) => {
+    const f = iframeRefs.current[id];
+    if (f) {
+      try { f.remove(); } catch (e) {}
+      delete iframeRefs.current[id];
+    }
+    setConsoleOutputs(prev => ({ ...prev, [id]: [...(prev[id] || []), '--- Run stopped ---'] }));
+  };
+
   const submitExam = async () => {
     const timeSpent = Math.round((Date.now() - startTime) / 1000);
     let correctCount = 0;
-    
-    const results = questions.map(q => {
-      const isCorrect = (answers[q.id] || '').toString().trim().toLowerCase() === (q.correctAnswer || '').toLowerCase();
-      if (isCorrect) correctCount++;
-      return {
-        questionId: q.id,
-        questionText: q.question,
-        correctAnswer: q.correctAnswer,
-        questionType: q.type,
-        userAnswer: answers[q.id] || '',
-        isCorrect,
-        explanation: q.explanation
-      };
-    });
+
+    const results: any[] = [];
+
+    for (const q of questions) {
+      const userAnswer = (answers[q.id] || '').toString().trim();
+
+      if (q.type === 'explanation') {
+        // Validate explanation answers using backend
+        try {
+          const validation = await (await import('../services/api')).validateCodingAPI(q.question, userAnswer, q.correctAnswer);
+          const isCorrect = validation && validation.valid === true;
+          if (isCorrect) correctCount++;
+          results.push({
+            questionId: q.id,
+            questionText: q.question,
+            correctAnswer: q.correctAnswer,
+            questionType: q.type,
+            userAnswer,
+            isCorrect,
+            explanation: validation && validation.feedback ? validation.feedback : q.explanation
+          });
+        } catch (e) {
+          // on error, fallback to marking as incorrect with error message
+          results.push({
+            questionId: q.id,
+            questionText: q.question,
+            correctAnswer: q.correctAnswer,
+            questionType: q.type,
+            userAnswer,
+            isCorrect: false,
+            explanation: 'Validation error: ' + (e?.message || String(e))
+          });
+        }
+      } else {
+        // MCQ: simple string comparison
+        const isCorrect = userAnswer.toLowerCase() === (q.correctAnswer || '').toLowerCase();
+        if (isCorrect) correctCount++;
+        results.push({
+          questionId: q.id,
+          questionText: q.question,
+          correctAnswer: q.correctAnswer,
+          questionType: q.type,
+          userAnswer,
+          isCorrect,
+          explanation: q.explanation
+        });
+      }
+    }
 
     const score = Math.round((correctCount / questions.length) * 100);
     const aiUsagePercent = Math.min(Math.round(aiUsageCounter * 10), 100); // Mock logic
-    
-    // Determine weak topics (if coding question or mcq was wrong) and deduplicate
-    const weakTopics = Array.from(new Set(questions.filter((_, i) => !results[i].isCorrect).map(q => q.type)));
+
+    // Determine weak topics (if question was wrong)
+    const weakTopics: string[] = Array.from(new Set(results.filter(r => !r.isCorrect).map(r => r.questionType)));
 
     const resultData = await db.saveExamResult({
       userId: user.id,
@@ -242,7 +356,7 @@ const MockExams: React.FC<MockExamsProps> = ({ user }) => {
           </div>
 
           <div className="space-y-3">
-            {q.options ? (
+            {(q.type === 'mcq' && Array.isArray(q.options) && q.options.length > 0) ? (
               q.options.map((opt, i) => (
                 <button
                   key={i}
@@ -258,20 +372,17 @@ const MockExams: React.FC<MockExamsProps> = ({ user }) => {
                 </button>
               ))
             ) : (
-              // For open-ended/coding answers we use a textarea with additional input handlers and accessibility
+              // For explanation questions: text input area
               <textarea
                 name={`answer-${q.id}`}
                 aria-label="Answer"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-emerald-400 font-mono focus:outline-none focus:ring-1 focus:ring-emerald-600 h-48"
-                placeholder="Write your answer or pseudo-code here..."
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-slate-100 font-sans focus:outline-none focus:ring-1 focus:ring-indigo-600 h-32"
+                placeholder="Write your detailed explanation here..."
                 value={answers[q.id] ?? ''}
                 onKeyDown={handleKeyPress}
-                onInput={(e: React.FormEvent<HTMLTextAreaElement>) => { setAnswers({ ...answers, [q.id]: (e.target as HTMLTextAreaElement).value }); handleKeyPress(); }}
-                onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
-                spellCheck={false}
-                autoCapitalize="off"
-                autoCorrect="off"
-                autoComplete="off"
+                onChange={(e) => { setAnswers({ ...answers, [q.id]: e.target.value }); handleKeyPress(); }}
+                spellCheck={true}
+                autoCapitalize="sentences"
               />
             )}
           </div>

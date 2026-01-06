@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../services/db';
 import { User, ExamResult, SkillGapReport } from '../types';
-import { CheckCircle, ShieldCheck, BookOpen, Award, Clock, Zap, TrendingUp } from 'lucide-react';
+import { CheckCircle, ShieldCheck, BookOpen, Award, Clock, Zap, TrendingUp, ArrowLeft } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface PublicProfileProps {
@@ -72,7 +72,7 @@ const PublicProfile: React.FC<PublicProfileProps> = ({ userId, currentUserId, on
     }
   };
 
-  if (!user) return <div className="text-slate-400">Loading profile...</div>;
+  if (!user) return <div className="text-slate-400 text-center py-8">Loading profile...</div>;
 
   const cards = [
     { title: 'Total Exams', value: stats.totalExams, icon: BookOpen, color: 'text-blue-500', bg: 'bg-blue-500/10' },
@@ -82,148 +82,231 @@ const PublicProfile: React.FC<PublicProfileProps> = ({ userId, currentUserId, on
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 flex items-center gap-6">
-        <div className="w-20 h-20 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-2xl">{user.name ? user.name.charAt(0).toUpperCase() : 'U'}</div>
-        <div>
-          <div className="text-2xl font-bold text-slate-100">{user.name}</div>
-          <div className="text-slate-400 text-sm">{user.interests?.join(' • ')}</div>
-          <div className="mt-2 flex items-center gap-3">
-            {user.linkedin && <a href={user.linkedin} target="_blank" rel="noreferrer" className="text-indigo-300 underline text-sm">LinkedIn</a>}
-            {user.leetcode && <a href={user.leetcode} target="_blank" rel="noreferrer" className="text-indigo-300 underline text-sm">LeetCode</a>}
-            {user.github && <a href={user.github} target="_blank" rel="noreferrer" className="text-indigo-300 underline text-sm">GitHub</a>}
-          </div>
-        </div>
-        <div className="ml-auto flex items-center gap-3">
-          {currentUserId && currentUserId !== user.id && (
-            <button
-              onClick={async () => {
-                if (!currentUserId) return;
-                setTogglingFav(true);
-                try {
-                  const updated = await db.toggleFavorite(currentUserId, user.id);
-                  setIsFavorited(Array.isArray(updated.favorites) && updated.favorites.includes(user.id));
-                } catch (e) {
-                  console.error('Fav toggle failed', e);
-                } finally {
-                  setTogglingFav(false);
-                }
-              }}
-              disabled={togglingFav}
-              className={`px-3 py-1 rounded-full text-sm ${isFavorited ? 'bg-yellow-500 text-slate-900' : 'bg-slate-800 text-slate-200'}`}
-            >
-              {isFavorited ? 'Favorited' : 'Add Favorite'}
-            </button>
-          )}
+    <div className="min-h-screen bg-slate-950 px-4 sm:px-6 py-6 sm:py-8">
+      <div className="max-w-6xl mx-auto space-y-6">
+        {/* Back Button for Mobile */}
+        {onBack && (
+          <button 
+            onClick={onBack}
+            className="flex items-center gap-2 text-indigo-400 hover:text-indigo-300 transition-colors md:hidden mb-4"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back</span>
+          </button>
+        )}
 
-          <a href={`${window.location.origin}/user/${user.id}`} target="_blank" rel="noreferrer" className="text-sm text-indigo-300 underline">Open public</a>
-          <button onClick={onBack} className="px-4 py-2 rounded bg-slate-800 text-slate-200">Back</button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {cards.map((card, i) => {
-          const Icon = card.icon as any;
-          return (
-            <div key={i} className="bg-slate-900 border border-slate-800 p-5 rounded-3xl">
-              <div className="flex items-center gap-3 mb-3">
-                <div className={`${card.bg} p-2 rounded-xl`}>
-                  <Icon className={`w-5 h-5 ${card.color}`} />
-                </div>
-                <div className="text-slate-400 text-sm">{card.title}</div>
-              </div>
-              <div className="text-2xl font-bold text-slate-100">{card.value}</div>
+        {/* Header Card - Responsive */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+            {/* Avatar */}
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xl sm:text-2xl flex-shrink-0">
+              {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </div>
-          );
-        })}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-slate-900 border border-slate-800 p-8 rounded-3xl">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-indigo-500" />
-              Learning Activity
-            </h2>
-          </div>
-          <div className="h-[260px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData}>
-                <defs>
-                  <linearGradient id="colorHoursPublic" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill: '#94a3b8'}} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8'}} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '12px' }}
-                  itemStyle={{ color: '#6366f1' }}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="hours" 
-                  stroke="#6366f1" 
-                  strokeWidth={3}
-                  fillOpacity={1} 
-                  fill="url(#colorHoursPublic)" 
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div className="bg-slate-900 border border-slate-800 p-8 rounded-3xl flex flex-col justify-center">
-          <h2 className="text-xl font-bold text-slate-100 mb-4 text-center">AI Readiness Score</h2>
-          <div className="relative flex items-center justify-center">
-            <div className="w-40 h-40 rounded-full border-[10px] border-slate-800 flex items-center justify-center">
-              <div className="text-center">
-                <span className="text-4xl font-black text-indigo-500">{stats.avgScore}</span>
-                <p className="text-slate-400 text-sm mt-1">Average</p>
+            
+            {/* User Info */}
+            <div className="flex-1">
+              <div className="text-xl sm:text-2xl font-bold text-slate-100">{user.name}</div>
+              <div className="text-slate-400 text-xs sm:text-sm mt-1 line-clamp-2">{user.interests?.join(' • ')}</div>
+              
+              {/* Links - Responsive */}
+              <div className="mt-3 flex flex-wrap items-center gap-2 sm:gap-3">
+                {user.linkedin && (
+                  <a href={user.linkedin} target="_blank" rel="noreferrer" className="text-indigo-300 underline text-xs sm:text-sm">
+                    LinkedIn
+                  </a>
+                )}
+                {user.leetcode && (
+                  <a href={user.leetcode} target="_blank" rel="noreferrer" className="text-indigo-300 underline text-xs sm:text-sm">
+                    LeetCode
+                  </a>
+                )}
+                {user.github && (
+                  <a href={user.github} target="_blank" rel="noreferrer" className="text-indigo-300 underline text-xs sm:text-sm">
+                    GitHub
+                  </a>
+                )}
               </div>
             </div>
-            <svg className="absolute w-40 h-40 transform -rotate-90">
-              <circle 
-                cx="80" cy="80" r="70" 
-                fill="transparent" 
-                stroke="#6366f1" 
-                strokeWidth="10" 
-                strokeDasharray={`${(stats.avgScore / 100) * 439} 439`}
-                strokeLinecap="round"
-              />
-            </svg>
-          </div>
-          <p className="text-slate-400 text-sm mt-6 text-center italic">
-            {reports.length > 0 ? (reports[0].analysis.missingSkills.slice(0,6).join(', ') ) : 'No summary available'}
-          </p>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-3xl p-6">
-          <h3 className="text-xl font-bold mb-4">Recent Exams</h3>
-          {exams.length === 0 ? (
-            <p className="text-slate-400">No public exam history</p>
-          ) : (
-            <ul className="space-y-3">
-              {exams.map(e => (
-                <li key={e.id} className="bg-slate-800 p-3 rounded-lg flex items-center justify-between">
-                  <div>
-                    <div className="font-bold text-slate-100">{e.examType}</div>
-                    <div className="text-sm text-slate-400">{new Date(e.createdAt).toLocaleString()}</div>
+            {/* Action Buttons - Responsive */}
+            <div className="flex flex-col gap-2 w-full sm:w-auto sm:flex-col sm:items-end">
+              {currentUserId && currentUserId !== user.id && (
+                <button
+                  onClick={async () => {
+                    if (!currentUserId) return;
+                    setTogglingFav(true);
+                    try {
+                      const updated = await db.toggleFavorite(currentUserId, user.id);
+                      setIsFavorited(Array.isArray(updated.favorites) && updated.favorites.includes(user.id));
+                    } catch (e) {
+                      console.error('Fav toggle failed', e);
+                    } finally {
+                      setTogglingFav(false);
+                    }
+                  }}
+                  disabled={togglingFav}
+                  className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
+                    isFavorited ? 'bg-yellow-500 text-slate-900 hover:bg-yellow-600' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
+                  }`}
+                >
+                  {isFavorited ? '★ Favorited' : '☆ Add Favorite'}
+                </button>
+              )}
+              <a 
+                href={`${window.location.origin}/user/${user.id}`} 
+                target="_blank" 
+                rel="noreferrer" 
+                className="text-xs sm:text-sm text-indigo-300 underline text-center sm:text-right"
+              >
+                Open public
+              </a>
+              {onBack && (
+                <button 
+                  onClick={onBack} 
+                  className="hidden md:block px-3 sm:px-4 py-2 rounded bg-slate-800 text-slate-200 text-xs sm:text-sm hover:bg-slate-700 transition-colors"
+                >
+                  Back
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Cards - Responsive Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+          {cards.map((card, i) => {
+            const Icon = card.icon as any;
+            return (
+              <div key={i} className="bg-slate-900 border border-slate-800 p-3 sm:p-5 rounded-2xl sm:rounded-3xl hover:border-indigo-600 transition-colors">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                  <div className={`${card.bg} p-1.5 sm:p-2 rounded-lg sm:rounded-xl`}>
+                    <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${card.color}`} />
                   </div>
-                  <div className="text-xl font-black">{e.score}%</div>
-                </li>
-              ))}
-            </ul>
-          )}
+                  <div className="text-slate-400 text-xs sm:text-sm line-clamp-1">{card.title}</div>
+                </div>
+                <div className="text-lg sm:text-2xl font-bold text-slate-100 truncate">{card.value}</div>
+              </div>
+            );
+          })}
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6">
-          <h3 className="text-xl font-bold mb-4">Summary</h3>
-          <p className="text-slate-400">{reports.length > 0 ? reports[0].analysis.missingSkills.join(', ') : 'No summary available'}</p>
+        {/* Charts Section - Responsive */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Learning Activity Chart */}
+          <div className="lg:col-span-2 bg-slate-900 border border-slate-800 p-4 sm:p-8 rounded-2xl sm:rounded-3xl">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-100 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-indigo-500" />
+                Learning Activity
+              </h2>
+            </div>
+            <div className="h-64 sm:h-[260px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorHoursPublic" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+                  <XAxis 
+                    dataKey="day" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{fill: '#94a3b8', fontSize: 12}} 
+                    dy={10} 
+                  />
+                  <YAxis 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{fill: '#94a3b8', fontSize: 12}} 
+                  />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '12px' }}
+                    itemStyle={{ color: '#6366f1' }}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="hours" 
+                    stroke="#6366f1" 
+                    strokeWidth={3}
+                    fillOpacity={1} 
+                    fill="url(#colorHoursPublic)" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* AI Readiness Score Card */}
+          <div className="bg-slate-900 border border-slate-800 p-4 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-center">
+            <h2 className="text-lg sm:text-xl font-bold text-slate-100 mb-4 sm:mb-6 text-center">AI Readiness Score</h2>
+            <div className="flex justify-center">
+              <div className="relative w-40 h-40 sm:w-48 sm:h-48">
+                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 160 160">
+                  <circle 
+                    cx="80" cy="80" r="70" 
+                    fill="transparent" 
+                    stroke="#334155" 
+                    strokeWidth="10" 
+                  />
+                  <circle 
+                    cx="80" cy="80" r="70" 
+                    fill="transparent" 
+                    stroke="#6366f1" 
+                    strokeWidth="10" 
+                    strokeDasharray={`${(stats.avgScore / 100) * 439} 439`}
+                    strokeLinecap="round"
+                    className="transition-all duration-1000"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <span className="text-3xl sm:text-4xl font-black text-indigo-500">{stats.avgScore}</span>
+                    <p className="text-xs sm:text-sm text-slate-400 mt-1">Average</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p className="text-slate-400 text-xs sm:text-sm mt-4 sm:mt-6 text-center italic px-2">
+              {reports.length > 0 ? (reports[0].analysis.missingSkills.slice(0,6).join(', ') ) : 'No summary available'}
+            </p>
+          </div>
+        </div>
+
+        {/* Recent Exams and Summary - Responsive */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Recent Exams */}
+          <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+            <h3 className="text-lg sm:text-xl font-bold mb-4 text-slate-100">Recent Exams</h3>
+            {exams.length === 0 ? (
+              <p className="text-slate-400 text-sm">No public exam history</p>
+            ) : (
+              <div className="space-y-2 sm:space-y-3">
+                {exams.map(e => (
+                  <div 
+                    key={e.id} 
+                    className="bg-slate-800 p-3 sm:p-4 rounded-lg sm:rounded-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 hover:bg-slate-700 transition-colors"
+                  >
+                    <div>
+                      <div className="font-bold text-slate-100 text-sm sm:text-base">{e.examType}</div>
+                      <div className="text-xs sm:text-sm text-slate-400">{new Date(e.createdAt).toLocaleString()}</div>
+                    </div>
+                    <div className="text-xl sm:text-2xl font-black text-indigo-400 sm:text-right">{e.score}%</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Summary */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+            <h3 className="text-lg sm:text-xl font-bold mb-4 text-slate-100">Skills to Improve</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              {reports.length > 0 ? reports[0].analysis.missingSkills.join(', ') : 'No summary available'}
+            </p>
+          </div>
         </div>
       </div>
     </div>

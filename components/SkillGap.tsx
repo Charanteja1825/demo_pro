@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { User, SkillGapReport } from '../types';
-import { generateSkillGapAnalysis } from '../services/ai';
+import { generateSkillGapAnalysisAPI } from '../services/api';
 import { db } from '../services/db';
 import { Search, Loader2, Rocket, Map, Target, Calendar } from 'lucide-react';
 
@@ -50,7 +50,7 @@ const SkillGap: React.FC<SkillGapProps> = ({ user }) => {
     setLoading(true);
     try {
       const skillsArray = currentSkills.split(',').map(s => s.trim()).filter(Boolean);
-      const analysisData = await generateSkillGapAnalysis(role, skillsArray, prepTime);
+      const analysisData = await generateSkillGapAnalysisAPI(role, skillsArray, prepTime);
       
       const newReport = await db.saveSkillReport({
         userId: user.id,
