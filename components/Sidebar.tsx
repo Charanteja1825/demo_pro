@@ -24,13 +24,13 @@ const Sidebar: React.FC<SidebarProps> = ({ currentTab, setTab, onLogout, isOpen 
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex w-64 bg-slate-900 h-screen fixed left-0 top-0 text-white flex-col border-r border-slate-800">
-        <div className="p-6 border-b border-slate-800 mb-4">
+      <aside className="hidden md:flex w-64 bg-blue-50 h-screen fixed left-0 top-0 text-slate-900 flex-col border-r border-gray-300">
+        <div className="p-6 border-b border-gray-300 mb-4">
           <div className="flex items-center gap-3">
-            <div className="bg-indigo-600 p-2 rounded-lg">
-              <GraduationCap className="w-6 h-6" />
+            <div className="bg-blue-600 p-2 rounded-lg">
+              <GraduationCap className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-bold tracking-tight">CareerReady</span>
+            <span className="text-xl font-bold tracking-tight text-slate-900">CareerReady</span>
           </div>
         </div>
 
@@ -44,8 +44,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentTab, setTab, onLogout, isOpen 
                 onClick={() => setTab(item.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                   isActive 
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' 
-                    : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' 
+                    : 'text-slate-600 hover:bg-gray-200 hover:text-slate-900'
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -58,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentTab, setTab, onLogout, isOpen 
         <div className="p-4 mt-auto">
           <button
             onClick={onLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-red-500/10 hover:text-red-500 transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors"
           >
             <LogOut className="w-5 h-5" />
             <span className="font-medium">Logout</span>
@@ -70,13 +70,13 @@ const Sidebar: React.FC<SidebarProps> = ({ currentTab, setTab, onLogout, isOpen 
       {isOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-          <aside className="relative w-64 bg-slate-900 h-full text-white flex flex-col border-r border-slate-800">
-            <div className="p-4 flex items-center justify-between border-b border-slate-800">
+          <aside className="relative w-64 bg-blue-50 h-full text-slate-900 flex flex-col border-r border-gray-300">
+            <div className="p-4 flex items-center justify-between border-b border-gray-300">
               <div className="flex items-center gap-3">
-                <div className="bg-indigo-600 p-2 rounded-lg">
-                  <GraduationCap className="w-5 h-5" />
+                <div className="bg-blue-600 p-2 rounded-lg">
+                  <GraduationCap className="w-5 h-5 text-white" />
                 </div>
-                <span className="font-semibold">CareerReady</span>
+                <span className="font-semibold text-slate-900">CareerReady</span>
               </div>
               <button onClick={onClose} aria-label="Close sidebar" className="p-2">
                 <X className="w-5 h-5" />
@@ -93,8 +93,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentTab, setTab, onLogout, isOpen 
                     onClick={() => { setTab(item.id); onClose && onClose(); }}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                       isActive 
-                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' 
-                        : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
+                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' 
+                        : 'text-slate-600 hover:bg-gray-200 hover:text-slate-900'
                     }`}
                   >
                     <Icon className="w-5 h-5" />
@@ -107,7 +107,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentTab, setTab, onLogout, isOpen 
             <div className="p-4 mt-auto">
               <button
                 onClick={() => { onLogout(); onClose && onClose(); }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-red-500/10 hover:text-red-500 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors"
               >
                 <LogOut className="w-5 h-5" />
                 <span className="font-medium">Logout</span>

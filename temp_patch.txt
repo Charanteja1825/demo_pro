@@ -1,0 +1,6 @@
+Add getAllUsers function after getAllInterests in db.ts:
+
+  async getAllUsers(): Promise<User[]> {
+    const snap = await getDocs(collection(firestore, "users"));
+    return snap.docs.map(doc => doc.data() as User);
+  },

@@ -267,6 +267,12 @@ export const db = {
     return users.slice(0, limit);
   },
 
+  async getAllUsers(userId: string): Promise<User[]> {
+    const snap = await getDocs(collection(firestore, "users"));
+    const users = snap.docs.map(doc => doc.data() as User).filter(u => u.id !== userId);
+    return users;
+  },
+
   async getAllInterests(): Promise<string[]> {
     const snap = await getDocs(collection(firestore, "users"));
     const all: string[] = [];

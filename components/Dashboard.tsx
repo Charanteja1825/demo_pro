@@ -49,32 +49,32 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div>
-        <h1 className="text-3xl font-bold text-slate-100 mb-2">Welcome back, {user.name}! 👋</h1>
-        <p className="text-slate-400">Here's your preparation overview for today.</p>
+        <h1 className="text-3xl font-bold text-slate-900 mb-2">Welcome back, {user.name}! 👋</h1>
+        <p className="text-slate-600">Here's your preparation overview for today.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {cards.map((card, i) => {
           const Icon = card.icon;
           return (
-            <div key={i} className="bg-slate-900 border border-slate-800 p-6 rounded-3xl hover:border-slate-700 transition-all">
+            <div key={i} className="bg-white border border-gray-300 p-6 rounded-3xl hover:border-gray-400 transition-all shadow-sm">
               <div className="flex items-center gap-4 mb-4">
                 <div className={`${card.bg} p-3 rounded-2xl`}>
                   <Icon className={`w-6 h-6 ${card.color}`} />
                 </div>
-                <h3 className="text-slate-400 font-medium">{card.title}</h3>
+                <h3 className="text-slate-700 font-medium">{card.title}</h3>
               </div>
-              <p className="text-3xl font-bold text-slate-100">{card.value}</p>
+              <p className="text-3xl font-bold text-slate-900">{card.value}</p>
             </div>
           );
         })}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-slate-900 border border-slate-800 p-8 rounded-3xl">
+        <div className="lg:col-span-2 bg-white border border-gray-300 p-8 rounded-3xl shadow-sm">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-indigo-500" />
+            <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-blue-600" />
               Learning Activity
             </h2>
           </div>
@@ -83,21 +83,21 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
               <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="colorHours" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill: '#94a3b8'}} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8'}} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" vertical={false} />
+                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill: '#6b7280'}} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#6b7280'}} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '12px' }}
-                  itemStyle={{ color: '#6366f1' }}
+                  contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #d1d5db', borderRadius: '12px' }}
+                  itemStyle={{ color: '#2563eb' }}
                 />
                 <Area 
                   type="monotone" 
                   dataKey="hours" 
-                  stroke="#6366f1" 
+                  stroke="#2563eb" 
                   strokeWidth={3}
                   fillOpacity={1} 
                   fill="url(#colorHours)" 
@@ -107,27 +107,27 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
           </div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 p-8 rounded-3xl flex flex-col justify-center">
-           <h2 className="text-xl font-bold text-slate-100 mb-4 text-center">AI Readiness Score</h2>
+        <div className="bg-white border border-gray-300 p-8 rounded-3xl shadow-sm flex flex-col justify-center">
+           <h2 className="text-xl font-bold text-slate-900 mb-4 text-center">AI Readiness Score</h2>
            <div className="relative flex items-center justify-center">
-              <div className="w-48 h-48 rounded-full border-[12px] border-slate-800 flex items-center justify-center">
+              <div className="w-48 h-48 rounded-full border-[12px] border-gray-300 flex items-center justify-center">
                 <div className="text-center">
-                  <span className="text-5xl font-black text-indigo-500">{stats.avgScore}</span>
-                  <p className="text-slate-400 text-sm mt-1">Average</p>
+                  <span className="text-5xl font-black text-blue-600">{stats.avgScore}</span>
+                  <p className="text-slate-600 text-sm mt-1">Average</p>
                 </div>
               </div>
               <svg className="absolute w-48 h-48 transform -rotate-90">
                 <circle 
                   cx="96" cy="96" r="84" 
                   fill="transparent" 
-                  stroke="#6366f1" 
+                  stroke="#2563eb" 
                   strokeWidth="12" 
                   strokeDasharray={`${(stats.avgScore / 100) * 527} 527`}
                   strokeLinecap="round"
                 />
               </svg>
            </div>
-           <p className="text-slate-400 text-sm mt-8 text-center italic">
+           <p className="text-slate-600 text-sm mt-8 text-center italic">
              "Consistent practice is the key to mastering your technical skills."
            </p>
         </div>

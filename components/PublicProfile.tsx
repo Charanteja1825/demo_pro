@@ -72,23 +72,23 @@ const PublicProfile: React.FC<PublicProfileProps> = ({ userId, currentUserId, on
     }
   };
 
-  if (!user) return <div className="text-slate-400 text-center py-8">Loading profile...</div>;
+  if (!user) return <div className="text-slate-600 text-center py-8">Loading profile...</div>;
 
   const cards = [
-    { title: 'Total Exams', value: stats.totalExams, icon: BookOpen, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-    { title: 'Average Score', value: `${stats.avgScore}%`, icon: Award, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-    { title: 'Study Hours (Week)', value: stats.studyHoursThisWeek, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-    { title: 'Prep Streak', value: `${stats.streak} Days`, icon: Zap, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
+    { title: 'Total Exams', value: stats.totalExams, icon: BookOpen, color: 'text-blue-600', bg: 'bg-blue-50' },
+    { title: 'Average Score', value: `${stats.avgScore}%`, icon: Award, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+    { title: 'Study Hours (Week)', value: stats.studyHoursThisWeek, icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' },
+    { title: 'Prep Streak', value: `${stats.streak} Days`, icon: Zap, color: 'text-blue-600', bg: 'bg-blue-50' },
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 px-4 sm:px-6 py-6 sm:py-8">
+    <div className="min-h-screen bg-white px-4 sm:px-6 py-6 sm:py-8">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Back Button for Mobile */}
         {onBack && (
           <button 
             onClick={onBack}
-            className="flex items-center gap-2 text-indigo-400 hover:text-indigo-300 transition-colors md:hidden mb-4"
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors md:hidden mb-4"
           >
             <ArrowLeft className="w-5 h-5" />
             <span>Back</span>
@@ -96,25 +96,25 @@ const PublicProfile: React.FC<PublicProfileProps> = ({ userId, currentUserId, on
         )}
 
         {/* Header Card - Responsive */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-8">
+        <div className="bg-white border border-gray-300 rounded-2xl sm:rounded-3xl p-4 sm:p-8">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
             {/* Avatar */}
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xl sm:text-2xl flex-shrink-0">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xl sm:text-2xl flex-shrink-0">
               {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </div>
             
             {/* User Info */}
             <div className="flex-1">
-              <div className="text-xl sm:text-2xl font-bold text-slate-100">{user.name}</div>
-              <div className="text-slate-400 text-xs sm:text-sm mt-1 line-clamp-2">{user.interests?.join(' • ')}</div>
+              <div className="text-xl sm:text-2xl font-bold text-slate-900">{user.name}</div>
+              <div className="text-slate-600 text-xs sm:text-sm mt-1 line-clamp-2">{user.interests?.join(' • ')}</div>
               
               {/* Skills */}
               {user.skills && user.skills.length > 0 && (
                 <div className="mt-3">
-                  <div className="text-xs font-semibold text-slate-400 mb-1">Skills</div>
+                  <div className="text-xs font-semibold text-slate-600 mb-1">Skills</div>
                   <div className="flex flex-wrap gap-1">
                     {user.skills.map((skill, i) => (
-                      <span key={i} className="bg-indigo-600/20 text-indigo-300 text-xs px-2 py-1 rounded-full">
+                      <span key={i} className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full border border-blue-200">
                         {skill}
                       </span>
                     ))}
@@ -125,10 +125,10 @@ const PublicProfile: React.FC<PublicProfileProps> = ({ userId, currentUserId, on
               {/* Interests */}
               {user.interests && user.interests.length > 0 && (
                 <div className="mt-2">
-                  <div className="text-xs font-semibold text-slate-400 mb-1">Interests</div>
+                  <div className="text-xs font-semibold text-slate-600 mb-1">Interests</div>
                   <div className="flex flex-wrap gap-1">
                     {user.interests.map((interest, i) => (
-                      <span key={i} className="bg-emerald-600/20 text-emerald-300 text-xs px-2 py-1 rounded-full">
+                      <span key={i} className="bg-emerald-50 text-emerald-700 text-xs px-2 py-1 rounded-full border border-emerald-200">
                         {interest}
                       </span>
                     ))}
@@ -139,17 +139,17 @@ const PublicProfile: React.FC<PublicProfileProps> = ({ userId, currentUserId, on
               {/* Links - Responsive */}
               <div className="mt-3 flex flex-wrap items-center gap-2 sm:gap-3">
                 {user.linkedin && (
-                  <a href={user.linkedin} target="_blank" rel="noreferrer" className="text-indigo-300 underline text-xs sm:text-sm">
+                  <a href={user.linkedin} target="_blank" rel="noreferrer" className="text-blue-600 underline text-xs sm:text-sm">
                     LinkedIn
                   </a>
                 )}
                 {user.leetcode && (
-                  <a href={user.leetcode} target="_blank" rel="noreferrer" className="text-indigo-300 underline text-xs sm:text-sm">
+                  <a href={user.leetcode} target="_blank" rel="noreferrer" className="text-blue-600 underline text-xs sm:text-sm">
                     LeetCode
                   </a>
                 )}
                 {user.github && (
-                  <a href={user.github} target="_blank" rel="noreferrer" className="text-indigo-300 underline text-xs sm:text-sm">
+                  <a href={user.github} target="_blank" rel="noreferrer" className="text-blue-600 underline text-xs sm:text-sm">
                     GitHub
                   </a>
                 )}
@@ -174,7 +174,7 @@ const PublicProfile: React.FC<PublicProfileProps> = ({ userId, currentUserId, on
                   }}
                   disabled={togglingFav}
                   className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
-                    isFavorited ? 'bg-yellow-500 text-slate-900 hover:bg-yellow-600' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
+                    isFavorited ? 'bg-yellow-400 text-slate-900 hover:bg-yellow-500' : 'bg-gray-200 text-slate-900 hover:bg-gray-300'
                   }`}
                 >
                   {isFavorited ? '★ Favorited' : '☆ Add Favorite'}
@@ -184,14 +184,14 @@ const PublicProfile: React.FC<PublicProfileProps> = ({ userId, currentUserId, on
                 href={`${window.location.origin}/user/${user.id}`} 
                 target="_blank" 
                 rel="noreferrer" 
-                className="text-xs sm:text-sm text-indigo-300 underline text-center sm:text-right"
+                className="text-xs sm:text-sm text-blue-600 underline text-center sm:text-right"
               >
                 Open public
               </a>
               {onBack && (
                 <button 
                   onClick={onBack} 
-                  className="hidden md:block px-3 sm:px-4 py-2 rounded bg-slate-800 text-slate-200 text-xs sm:text-sm hover:bg-slate-700 transition-colors"
+                  className="hidden md:block px-3 sm:px-4 py-2 rounded bg-gray-200 text-slate-900 text-xs sm:text-sm hover:bg-gray-300 transition-colors"
                 >
                   Back
                 </button>
@@ -205,14 +205,14 @@ const PublicProfile: React.FC<PublicProfileProps> = ({ userId, currentUserId, on
           {cards.map((card, i) => {
             const Icon = card.icon as any;
             return (
-              <div key={i} className="bg-slate-900 border border-slate-800 p-3 sm:p-5 rounded-2xl sm:rounded-3xl hover:border-indigo-600 transition-colors">
+              <div key={i} className="bg-white border border-gray-300 p-3 sm:p-5 rounded-2xl sm:rounded-3xl hover:border-blue-600 transition-colors">
                 <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                   <div className={`${card.bg} p-1.5 sm:p-2 rounded-lg sm:rounded-xl`}>
                     <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${card.color}`} />
                   </div>
-                  <div className="text-slate-400 text-xs sm:text-sm line-clamp-1">{card.title}</div>
+                  <div className="text-slate-600 text-xs sm:text-sm line-clamp-1">{card.title}</div>
                 </div>
-                <div className="text-lg sm:text-2xl font-bold text-slate-100 truncate">{card.value}</div>
+                <div className="text-lg sm:text-2xl font-bold text-slate-900 truncate">{card.value}</div>
               </div>
             );
           })}
@@ -221,10 +221,10 @@ const PublicProfile: React.FC<PublicProfileProps> = ({ userId, currentUserId, on
         {/* Charts Section - Responsive */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Learning Activity Chart */}
-          <div className="lg:col-span-2 bg-slate-900 border border-slate-800 p-4 sm:p-8 rounded-2xl sm:rounded-3xl">
+          <div className="lg:col-span-2 bg-white border border-gray-300 p-4 sm:p-8 rounded-2xl sm:rounded-3xl">
             <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <h2 className="text-lg sm:text-xl font-bold text-slate-100 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-indigo-500" />
+              <h2 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-blue-600" />
                 Learning Activity
               </h2>
             </div>
@@ -233,31 +233,31 @@ const PublicProfile: React.FC<PublicProfileProps> = ({ userId, currentUserId, on
                 <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorHoursPublic" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
                   <XAxis 
                     dataKey="day" 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{fill: '#94a3b8', fontSize: 12}} 
+                    tick={{fill: '#64748b', fontSize: 12}} 
                     dy={10} 
                   />
                   <YAxis 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{fill: '#94a3b8', fontSize: 12}} 
+                    tick={{fill: '#64748b', fontSize: 12}} 
                   />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '12px' }}
-                    itemStyle={{ color: '#6366f1' }}
+                    contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '12px' }}
+                    itemStyle={{ color: '#2563eb' }}
                   />
                   <Area 
                     type="monotone" 
                     dataKey="hours" 
-                    stroke="#6366f1" 
+                    stroke="#2563eb" 
                     strokeWidth={3}
                     fillOpacity={1} 
                     fill="url(#colorHoursPublic)" 
@@ -268,21 +268,21 @@ const PublicProfile: React.FC<PublicProfileProps> = ({ userId, currentUserId, on
           </div>
 
           {/* AI Readiness Score Card */}
-          <div className="bg-slate-900 border border-slate-800 p-4 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-center">
-            <h2 className="text-lg sm:text-xl font-bold text-slate-100 mb-4 sm:mb-6 text-center">AI Readiness Score</h2>
+          <div className="bg-white border border-gray-300 p-4 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-center">
+            <h2 className="text-lg sm:text-xl font-bold text-slate-900 mb-4 sm:mb-6 text-center">AI Readiness Score</h2>
             <div className="flex justify-center">
               <div className="relative w-40 h-40 sm:w-48 sm:h-48">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 160 160">
                   <circle 
                     cx="80" cy="80" r="70" 
                     fill="transparent" 
-                    stroke="#334155" 
+                    stroke="#e5e7eb" 
                     strokeWidth="10" 
                   />
                   <circle 
                     cx="80" cy="80" r="70" 
                     fill="transparent" 
-                    stroke="#6366f1" 
+                    stroke="#2563eb" 
                     strokeWidth="10" 
                     strokeDasharray={`${(stats.avgScore / 100) * 439} 439`}
                     strokeLinecap="round"
@@ -291,13 +291,13 @@ const PublicProfile: React.FC<PublicProfileProps> = ({ userId, currentUserId, on
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
-                    <span className="text-3xl sm:text-4xl font-black text-indigo-500">{stats.avgScore}</span>
-                    <p className="text-xs sm:text-sm text-slate-400 mt-1">Average</p>
+                    <span className="text-3xl sm:text-4xl font-black text-blue-600">{stats.avgScore}</span>
+                    <p className="text-xs sm:text-sm text-slate-600 mt-1">Average</p>
                   </div>
                 </div>
               </div>
             </div>
-            <p className="text-slate-400 text-xs sm:text-sm mt-4 sm:mt-6 text-center italic px-2">
+            <p className="text-slate-600 text-xs sm:text-sm mt-4 sm:mt-6 text-center italic px-2">
               {reports.length > 0 ? (reports[0].analysis.missingSkills.slice(0,6).join(', ') ) : 'No summary available'}
             </p>
           </div>

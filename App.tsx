@@ -111,7 +111,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200">
+    <div className="min-h-screen bg-white text-slate-900">
       <Sidebar 
         currentTab={currentTab} 
         setTab={setCurrentTab} 
@@ -122,11 +122,11 @@ const App: React.FC = () => {
 
       <main className="min-h-screen md:pl-64">
         {/* Mobile header with hamburger */}
-        <div className="md:hidden p-3 border-b border-slate-800 flex items-center gap-3">
+        <div className="md:hidden p-3 border-b border-gray-300 flex items-center gap-3">
           <button onClick={() => setSidebarOpen(true)} aria-label="Open sidebar" className="p-2">
-            <Menu className="w-6 h-6 text-slate-200" />
+            <Menu className="w-6 h-6 text-slate-900" />
           </button>
-          <span className="font-semibold">CareerReady</span>
+          <span className="font-semibold text-slate-900">CareerReady</span>
         </div>
 
         <div className="p-6 md:p-10">

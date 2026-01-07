@@ -18,7 +18,7 @@ const ShareButton: React.FC<{ userId: string }> = ({ userId }) => {
   };
 
   return (
-    <button onClick={handleCopy} title="Copy public profile link" className="px-3 py-1 rounded bg-slate-800 text-slate-200 text-sm flex items-center gap-2">
+    <button onClick={handleCopy} title="Copy public profile link" className="px-3 py-1 rounded bg-gray-100 text-slate-900 text-sm flex items-center gap-2">
       <Copy className="w-4 h-4" />
       <span>{copied ? 'Copied!' : 'Share'}</span>
     </button>
@@ -125,15 +125,15 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
   };
 
   return (
-    <section className="max-w-2xl mx-auto bg-slate-900 p-6 rounded-lg border border-slate-800">
+    <section className="max-w-2xl mx-auto bg-white p-6 rounded-lg border border-gray-300">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-semibold">Profile</h2>
+        <h2 className="text-2xl font-semibold text-slate-900">Profile</h2>
         <div className="flex items-center gap-2">
           <a
             href={`${window.location.origin}/user/${user.id}`}
             target="_blank"
             rel="noreferrer"
-            className="text-sm text-indigo-300 underline hidden md:inline-block"
+            className="text-sm text-blue-600 underline hidden md:inline-block"
           >
             Open public
           </a>
@@ -143,51 +143,51 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm text-slate-400">Name</label>
+          <label className="block text-sm text-slate-600">Name</label>
           {editing ? (
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full bg-slate-800 border border-slate-700 rounded px-3 py-2"
+              className="mt-1 block w-full bg-gray-50 border border-gray-300 rounded px-3 py-2 text-slate-900"
             />
           ) : (
-            <p className="mt-1 text-slate-200">{user.name || '—'}</p>
+            <p className="mt-1 text-slate-900">{user.name || '—'}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm text-slate-400">Member since</label>
-          <p className="mt-1 text-slate-200">{user.createdAt ? new Date(user.createdAt).toLocaleString() : '—'}</p>
+          <label className="block text-sm text-slate-600">Member since</label>
+          <p className="mt-1 text-slate-900">{user.createdAt ? new Date(user.createdAt).toLocaleString() : '—'}</p>
         </div>
 
         <div>
-          <label className="block text-sm text-slate-400">LinkedIn</label>
+          <label className="block text-sm text-slate-600">LinkedIn</label>
           {editing ? (
-            <input value={linkedin} onChange={(e) => setLinkedin(e.target.value)} className="mt-1 block w-full bg-slate-800 border border-slate-700 rounded px-3 py-2" placeholder="https://www.linkedin.com/in/yourname" />
+            <input value={linkedin} onChange={(e) => setLinkedin(e.target.value)} className="mt-1 block w-full bg-gray-50 border border-gray-300 rounded px-3 py-2 text-slate-900" placeholder="https://www.linkedin.com/in/yourname" />
           ) : (
-            <p className="mt-1 text-slate-200">{user.linkedin ? <a className="text-indigo-300 underline" href={user.linkedin} target="_blank" rel="noreferrer">{user.linkedin}</a> : '—'}</p>
+            <p className="mt-1 text-slate-900">{user.linkedin ? <a className="text-blue-600 underline" href={user.linkedin} target="_blank" rel="noreferrer">{user.linkedin}</a> : '—'}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm text-slate-400">LeetCode</label>
+          <label className="block text-sm text-slate-600">LeetCode</label>
           {editing ? (
-            <input value={leetcode} onChange={(e) => setLeetcode(e.target.value)} className="mt-1 block w-full bg-slate-800 border border-slate-700 rounded px-3 py-2" placeholder="https://leetcode.com/yourname" />
+            <input value={leetcode} onChange={(e) => setLeetcode(e.target.value)} className="mt-1 block w-full bg-gray-50 border border-gray-300 rounded px-3 py-2 text-slate-900" placeholder="https://leetcode.com/yourname" />
           ) : (
-            <p className="mt-1 text-slate-200">{user.leetcode ? <a className="text-indigo-300 underline" href={user.leetcode} target="_blank" rel="noreferrer">{user.leetcode}</a> : '—'}</p>
+            <p className="mt-1 text-slate-900">{user.leetcode ? <a className="text-blue-600 underline" href={user.leetcode} target="_blank" rel="noreferrer">{user.leetcode}</a> : '—'}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm text-slate-400">GitHub</label>
+          <label className="block text-sm text-slate-600">GitHub</label>
           {editing ? (
-            <input value={github} onChange={(e) => setGithub(e.target.value)} className="mt-1 block w-full bg-slate-800 border border-slate-700 rounded px-3 py-2" placeholder="https://github.com/yourname" />
+            <input value={github} onChange={(e) => setGithub(e.target.value)} className="mt-1 block w-full bg-gray-50 border border-gray-300 rounded px-3 py-2 text-slate-900" placeholder="https://github.com/yourname" />
           ) : (
-            <p className="mt-1 text-slate-200">{user.github ? <a className="text-indigo-300 underline" href={user.github} target="_blank" rel="noreferrer">{user.github}</a> : '—'}</p>
+            <p className="mt-1 text-slate-900">{user.github ? <a className="text-blue-600 underline" href={user.github} target="_blank" rel="noreferrer">{user.github}</a> : '—'}</p>
           )}
         </div>
 
-        {error && <p className="text-red-400">{error}</p>}
+        {error && <p className="text-red-600">{error}</p>}
 
         <div className="space-y-4">
           <div>
@@ -206,19 +206,19 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
                       }
                     }}
                     onBlur={() => { addSkill(skillInput); setSkillInput(''); }}
-                    className="flex-1 bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"
+                    className="flex-1 bg-gray-50 border border-gray-300 rounded px-3 py-2 text-sm text-slate-900"
                     placeholder="Type skill name and press Enter"
                   />
-                  <button type="button" onClick={() => { addSkill(skillInput); setSkillInput(''); }} className="px-4 py-2 rounded bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700">Add</button>
+                  <button type="button" onClick={() => { addSkill(skillInput); setSkillInput(''); }} className="px-4 py-2 rounded bg-blue-600 text-white text-sm font-medium hover:bg-blue-700">Add</button>
                 </div>
 
                 {/* Added Skills Tags */}
                 {skills.length > 0 && (
-                  <div className="flex gap-2 flex-wrap p-3 bg-slate-800/50 rounded-lg border border-slate-700">
+                  <div className="flex gap-2 flex-wrap p-3 bg-gray-50 rounded-lg border border-gray-300">
                     {skills.map((it, idx) => (
-                      <div key={idx} className="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                      <div key={idx} className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2">
                         <span>{it}</span>
-                        <button onClick={() => setSkills(prev => prev.filter(p => p !== it))} className="hover:text-slate-200">✕</button>
+                        <button onClick={() => setSkills(prev => prev.filter(p => p !== it))} className="hover:text-blue-100">✕</button>
                       </div>
                     ))}
                   </div>
@@ -226,21 +226,21 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
 
                 {/* Suggested Skills */}
                 <div className="space-y-2">
-                  <p className="text-xs text-slate-500 font-semibold uppercase">Quick Add Suggestions</p>
+                  <p className="text-xs text-slate-600 font-semibold uppercase">Quick Add Suggestions</p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {['JavaScript','TypeScript','React','Node.js','Python','AWS','Docker','SQL','Java','C++','Go','Rust'].map(s => (
-                      <button key={s} onClick={() => { addSkill(s); }} className="bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded text-sm text-slate-300 border border-slate-700 hover:border-indigo-600 transition-colors text-center">{s}</button>
+                      <button key={s} onClick={() => { addSkill(s); }} className="bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded text-sm text-slate-900 border border-gray-300 hover:border-blue-600 transition-colors text-center">{s}</button>
                     ))}
                   </div>
                 </div>
               </div>
             ) : (
-              <p className="mt-1 text-slate-200">{user.skills && user.skills.length > 0 ? user.skills.join(', ') : '—'}</p>
+              <p className="mt-1 text-slate-900">{user.skills && user.skills.length > 0 ? user.skills.join(', ') : '—'}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm text-slate-400 mb-3">Interests</label>
+            <label className="block text-sm text-slate-600 mb-3">Interests</label>
             {editing ? (
               <div className="mt-2 space-y-3">
                 <div className="flex gap-2 items-center">
@@ -255,19 +255,19 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
                       }
                     }}
                     onBlur={() => { addInterest(interestInput); setInterestInput(''); }}
-                    className="flex-1 bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"
+                    className="flex-1 bg-gray-50 border border-gray-300 rounded px-3 py-2 text-sm text-slate-900"
                     placeholder="Type interest name and press Enter"
                   />
-                  <button type="button" onClick={() => { addInterest(interestInput); setInterestInput(''); }} className="px-4 py-2 rounded bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700">Add</button>
+                  <button type="button" onClick={() => { addInterest(interestInput); setInterestInput(''); }} className="px-4 py-2 rounded bg-blue-600 text-white text-sm font-medium hover:bg-blue-700">Add</button>
                 </div>
 
                 {/* Added Interests Tags */}
                 {interests.length > 0 && (
-                  <div className="flex gap-2 flex-wrap p-3 bg-slate-800/50 rounded-lg border border-slate-700">
+                  <div className="flex gap-2 flex-wrap p-3 bg-gray-50 rounded-lg border border-gray-300">
                     {interests.map((it, idx) => (
                       <div key={idx} className="bg-emerald-600 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2">
                         <span>{it}</span>
-                        <button onClick={() => setInterests(prev => prev.filter(p => p !== it))} className="hover:text-slate-200">✕</button>
+                        <button onClick={() => setInterests(prev => prev.filter(p => p !== it))} className="hover:text-emerald-100">✕</button>
                       </div>
                     ))}
                   </div>
@@ -275,10 +275,10 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
 
                 {/* Suggested Interests */}
                 <div className="space-y-2">
-                  <p className="text-xs text-slate-500 font-semibold uppercase">Popular Roles</p>
+                  <p className="text-xs text-slate-600 font-semibold uppercase">Popular Roles</p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {POPULAR_ROLES.map(r => (
-                      <button key={r} onClick={() => { addInterest(r); }} className="bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded text-sm text-slate-300 border border-slate-700 hover:border-emerald-600 transition-colors text-center">{r}</button>
+                      <button key={r} onClick={() => { addInterest(r); }} className="bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded text-sm text-slate-900 border border-gray-300 hover:border-emerald-600 transition-colors text-center">{r}</button>
                     ))}
                   </div>
                 </div>
@@ -286,7 +286,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
                 {/* Filtered Suggestions from Database */}
                 {interestSuggestions.length > 0 && (
                   <div className="space-y-2">
-                    <p className="text-xs text-slate-500 font-semibold uppercase">Matching Suggestions</p>
+                    <p className="text-xs text-slate-600 font-semibold uppercase">Matching Suggestions</p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {interestSuggestions
                         .filter(s => {
@@ -307,27 +307,27 @@ const Profile: React.FC<ProfileProps> = ({ user, onUpdate }) => {
                         })
                         .slice(0,12)
                         .map(s => (
-                          <button key={s} onClick={() => { addInterest(s); }} className="bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded text-sm text-slate-300 border border-slate-700 hover:border-emerald-600 transition-colors text-center">{s}</button>
+                          <button key={s} onClick={() => { addInterest(s); }} className="bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded text-sm text-slate-900 border border-gray-300 hover:border-emerald-600 transition-colors text-center">{s}</button>
                       ))}
                     </div>
                   </div>
                 )}
               </div>
             ) : (
-              <p className="mt-1 text-slate-200">{user.interests && user.interests.length > 0 ? user.interests.join(', ') : '—'}</p>
+              <p className="mt-1 text-slate-900">{user.interests && user.interests.length > 0 ? user.interests.join(', ') : '—'}</p>
             )}
           </div>
 
           <div className="flex items-center gap-2">
             {editing ? (
               <>
-                <button onClick={handleSave} disabled={saving} className="bg-indigo-600 px-4 py-2 rounded">
+                <button onClick={handleSave} disabled={saving} className="bg-blue-600 px-4 py-2 rounded text-white hover:bg-blue-700">
                   {saving ? 'Saving...' : 'Save'}
                 </button>
-                <button onClick={() => { setEditing(false); setName(user.name || ''); setLinkedin(user.linkedin || ''); setLeetcode(user.leetcode || ''); setGithub(user.github || ''); setInterests(user.interests || []); setSkills(user.skills || []); setInterestInput(''); setSkillInput(''); }} className="px-4 py-2 rounded border">Cancel</button>
+                <button onClick={() => { setEditing(false); setName(user.name || ''); setLinkedin(user.linkedin || ''); setLeetcode(user.leetcode || ''); setGithub(user.github || ''); setInterests(user.interests || []); setSkills(user.skills || []); setInterestInput(''); setSkillInput(''); }} className="px-4 py-2 rounded border border-gray-300 text-slate-900 hover:bg-gray-100">Cancel</button>
               </>
             ) : (
-              <button onClick={() => setEditing(true)} className="bg-indigo-600 px-4 py-2 rounded">Edit Profile</button>
+              <button onClick={() => setEditing(true)} className="bg-blue-600 px-4 py-2 rounded text-white hover:bg-blue-700">Edit Profile</button>
             )}
           </div>
         </div>
