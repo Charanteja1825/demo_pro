@@ -37,7 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentTab, setTab, onLogout, isOpen 
             <div className="bg-blue-600 p-2 rounded-lg">
               <GraduationCap className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-slate-900">CareerReady</span>
+            <span className="text-xl font-bold tracking-tight text-slate-900">SkillForge</span>
           </div>
         </div>
 
@@ -107,7 +107,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentTab, setTab, onLogout, isOpen 
                 <div className="bg-blue-600 p-2 rounded-lg">
                   <GraduationCap className="w-5 h-5 text-white" />
                 </div>
-                <span className="font-semibold text-slate-900">CareerReady</span>
+                <span className="font-semibold text-slate-900">SkillForge</span>
               </div>
               <button onClick={onClose} aria-label="Close sidebar" className="p-2">
                 <X className="w-5 h-5" />

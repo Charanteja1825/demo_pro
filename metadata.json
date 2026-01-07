@@ -1,5 +1,5 @@
 {
-  "name": "CareerReady AI",
+  "name": "SkillForge",
   "description": "An AI-powered career readiness platform that tracks skill gaps, exams, mock interviews, and study progress with data-driven insights.",
   "requestFramePermissions": [
     "camera",

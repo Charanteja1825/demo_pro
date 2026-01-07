@@ -38,7 +38,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, notice }) => {
   //       if (user) {
   //         onLogin(user);
   //       } else {
-          
+
   //         setError('User not found. Please signup.');
   //       }
   //     } else {
@@ -57,57 +57,61 @@ const Auth: React.FC<AuthProps> = ({ onLogin, notice }) => {
   // };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setLoading(true);
-  setError("");
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-  try {
-    if (isLogin) {
-      // 🔐 Firebase Auth login
-      const fbUser = await signinWithEmail(
-        formData.email,
-        formData.password
-      );
+    try {
+      if (isLogin) {
+        // 🔐 Firebase Auth login
+        const fbUser = await signinWithEmail(
+          formData.email,
+          formData.password
+        );
 
-      // 🔁 Fetch user profile from Firestore
-      let user = await db.signinByUID(fbUser.uid);
+        // 🔁 Fetch user profile from Firestore
+        let user = await db.signinByUID(fbUser.uid);
 
-      if (!user) throw new Error("User profile not found");
+        if (!user) throw new Error("User profile not found");
 
-      onLogin(user);
-    } else {
-      // 🔐 Firebase Auth signup
-      const fbUser = await signupWithEmail(
-        formData.email,
-        formData.password
-      );
+        onLogin(user);
+      } else {
+        // 🔐 Firebase Auth signup
+        const fbUser = await signupWithEmail(
+          formData.email,
+          formData.password
+        );
 
-      // 🗄️ Save profile in Firestore
-      const newUser = await db.signup({
-  uid: fbUser.uid,              // ✅ REQUIRED
-  name: formData.name,
-  email: fbUser.email!
-});
+        // 🗄️ Save profile in Firestore
+        const newUser = await db.signup({
+          uid: fbUser.uid,              // ✅ REQUIRED
+          name: formData.name,
+          email: fbUser.email!
+        });
 
 
-      onLogin(newUser);
+        onLogin(newUser);
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Authentication failed");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error(err);
-    setError("Authentication failed");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-3xl p-8 border border-gray-300 shadow-lg">
+    <div className="min-h-screen hero-gradient flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Decorative background elements matching landing page */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100 rounded-full blur-3xl opacity-50 translate-x-1/3 -translate-y-1/3 animate-pulse-subtle pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-100 rounded-full blur-3xl opacity-50 -translate-x-1/3 translate-y-1/3 animate-pulse-subtle pointer-events-none"></div>
+
+      <div className="w-full max-w-md glass-card rounded-3xl p-8 border border-white/50 shadow-xl relative z-10 animate-fade-in-up">
         <div className="flex flex-col items-center mb-8">
           <div className="bg-blue-600 p-4 rounded-2xl mb-4">
             <GraduationCap className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">CareerReady AI</h1>
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">SkillForge</h1>
           <p className="text-slate-600 text-center">Accelerate your career journey with AI insights</p>
         </div>
 
@@ -157,73 +161,73 @@ const Auth: React.FC<AuthProps> = ({ onLogin, notice }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-600/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full btn-primary text-white font-bold py-3 rounded-xl shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2 hover:translate-y-[-2px]"
           >
             {loading && <Loader2 className="w-5 h-5 animate-spin" />}
             {isLogin ? 'Sign In' : 'Create Account'}
-            
+
           </button>
-         <div className="mt-4 flex justify-center">
- <button
-  type="button"
-  onClick={async () => {
-    setLoading(true);
-    setError("");
+          <div className="mt-4 flex justify-center">
+            <button
+              type="button"
+              onClick={async () => {
+                setLoading(true);
+                setError("");
 
-    try {
-      const fbUser = await signinWithGoogle();
+                try {
+                  const fbUser = await signinWithGoogle();
 
-    let user = await db.signinByUID(fbUser.uid);
-      if (user) {
-        // Merge Firebase profile fields so the UI shows them immediately
-        const merged = {
-          ...user,
-          email: user.email || fbUser.email || '',
-          name: user.name || fbUser.displayName || user.name
-        } as any;
+                  let user = await db.signinByUID(fbUser.uid);
+                  if (user) {
+                    // Merge Firebase profile fields so the UI shows them immediately
+                    const merged = {
+                      ...user,
+                      email: user.email || fbUser.email || '',
+                      name: user.name || fbUser.displayName || user.name
+                    } as any;
 
-        // If merged added/changed fields, persist them
-        const needsUpdate = (merged.email && merged.email !== user.email) || (fbUser.displayName && merged.name !== user.name);
-        if (needsUpdate) {
-          const updated = await db.updateUser({ uid: fbUser.uid, email: merged.email || undefined, name: merged.name || undefined });
-          user = updated;
-        } else {
-          user = merged;
-        }
-      } else {
-        // No Firestore user found — create one from Firebase profile
-        user = await db.signup({
-          uid: fbUser.uid,
-          name: fbUser.displayName || "User",
-          email: fbUser.email || ''
-        });
-      }
+                    // If merged added/changed fields, persist them
+                    const needsUpdate = (merged.email && merged.email !== user.email) || (fbUser.displayName && merged.name !== user.name);
+                    if (needsUpdate) {
+                      const updated = await db.updateUser({ uid: fbUser.uid, email: merged.email || undefined, name: merged.name || undefined });
+                      user = updated;
+                    } else {
+                      user = merged;
+                    }
+                  } else {
+                    // No Firestore user found — create one from Firebase profile
+                    user = await db.signup({
+                      uid: fbUser.uid,
+                      name: fbUser.displayName || "User",
+                      email: fbUser.email || ''
+                    });
+                  }
 
-      // Ensure we return a user with email/name populated to the app immediately
-      onLogin(user);
-    } catch (err) {
-      setError("Google sign-in failed");
-    } finally {
-      setLoading(false);
-    }
-  }}
-  className="w-full mt-4 flex items-center justify-center gap-3
+                  // Ensure we return a user with email/name populated to the app immediately
+                  onLogin(user);
+                } catch (err) {
+                  setError("Google sign-in failed");
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              className="w-full mt-4 flex items-center justify-center gap-3
              bg-white text-slate-900 font-medium
              py-3 rounded-xl border border-gray-300
              hover:bg-gray-50 transition shadow-sm"
->
-  {/* Google Logo */}
-  <svg width="18" height="18" viewBox="0 0 48 48">
-    <path fill="#EA4335" d="M24 9.5c3.54 0 6.68 1.23 9.18 3.25l6.84-6.84C35.94 2.1 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.06 17.74 9.5 24 9.5z"/>
-    <path fill="#4285F4" d="M46.1 24.5c0-1.64-.15-3.22-.42-4.75H24v9h12.45c-.54 2.88-2.18 5.32-4.6 6.95l7.1 5.5c4.15-3.83 6.55-9.48 6.55-16.7z"/>
-    <path fill="#FBBC05" d="M10.54 28.41c-.48-1.45-.76-2.99-.76-4.6s.28-3.15.76-4.6l-7.98-6.19C.92 16.23 0 19.98 0 24s.92 7.77 2.56 10.98l7.98-6.57z"/>
-    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.9-5.8l-7.1-5.5c-1.97 1.32-4.5 2.1-8.8 2.1-6.26 0-11.57-3.56-13.46-8.41l-7.98 6.57C6.51 42.62 14.62 48 24 48z"/>
-  </svg>
+            >
+              {/* Google Logo */}
+              <svg width="18" height="18" viewBox="0 0 48 48">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.68 1.23 9.18 3.25l6.84-6.84C35.94 2.1 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.06 17.74 9.5 24 9.5z" />
+                <path fill="#4285F4" d="M46.1 24.5c0-1.64-.15-3.22-.42-4.75H24v9h12.45c-.54 2.88-2.18 5.32-4.6 6.95l7.1 5.5c4.15-3.83 6.55-9.48 6.55-16.7z" />
+                <path fill="#FBBC05" d="M10.54 28.41c-.48-1.45-.76-2.99-.76-4.6s.28-3.15.76-4.6l-7.98-6.19C.92 16.23 0 19.98 0 24s.92 7.77 2.56 10.98l7.98-6.57z" />
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.9-5.8l-7.1-5.5c-1.97 1.32-4.5 2.1-8.8 2.1-6.26 0-11.57-3.56-13.46-8.41l-7.98 6.57C6.51 42.62 14.62 48 24 48z" />
+              </svg>
 
-  <span>Continue with Google</span>
-</button>
+              <span>Continue with Google</span>
+            </button>
 
-</div>
+          </div>
 
 
         </form>

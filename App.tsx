@@ -13,6 +13,7 @@ import Connections from './components/Connections';
 import PublicProfile from './components/PublicProfile';
 import StudyReminders from './components/StudyReminders';
 import StudyAIChat from './components/StudyAIChat';
+import LandingPage from './components/LandingPage';
 import { Menu, Bell, X } from 'lucide-react';
 import { db } from './services/db';
 
@@ -23,6 +24,7 @@ const App: React.FC = () => {
   const [selectedPublicUserId, setSelectedPublicUserId] = useState<string | null>(null);
   const [showReminderPopup, setShowReminderPopup] = useState(false);
   const [currentReminder, setCurrentReminder] = useState<StudyReminder | null>(null);
+  const [showAuth, setShowAuth] = useState(false); // New state to toggle showing Auth vs Landing
 
   useEffect(() => {
     const savedUser = localStorage.getItem('cr_current_user');
@@ -62,6 +64,11 @@ const App: React.FC = () => {
       if (m && m[1]) {
         setSelectedPublicUserId(m[1]);
         setCurrentTab('public-profile');
+        // If deep-linking, we might want to bypass landing or show auth immediately if needed
+        // For now, let's assume if they have a link, they might want to see the profile. 
+        // But the original code redirects to auth if !user.
+        // We will keep standard behavior: if !user, show landing (or auth).
+        setShowAuth(true); // Auto-show auth if trying to access a deep link? Or maybe just let them navigate.
       }
     } catch (e) {
       // ignore (server-side or test environment)
@@ -136,6 +143,7 @@ const App: React.FC = () => {
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('cr_current_user');
+    setShowAuth(false); // Reset to landing page on logout
   };
 
   const handleUpdateUser = (updatedUser: User) => {
@@ -144,7 +152,19 @@ const App: React.FC = () => {
   };
 
   if (!user) {
-    return <Auth onLogin={handleLogin} notice={selectedPublicUserId ? 'Please sign in to view public profiles' : undefined} />;
+    if (showAuth) {
+      return (
+        <>
+          <div className="fixed top-4 left-4 z-50">
+            <button onClick={() => setShowAuth(false)} className="text-slate-500 hover:text-slate-800 flex items-center gap-1 text-sm font-medium bg-white/80 p-2 rounded-lg backdrop-blur-sm">
+              ← Back to Home
+            </button>
+          </div>
+          <Auth onLogin={handleLogin} notice={selectedPublicUserId ? 'Please sign in to view public profiles' : undefined} />
+        </>
+      );
+    }
+    return <LandingPage onLogin={() => setShowAuth(true)} onSignup={() => setShowAuth(true)} />;
   }
 
   const handleViewPublicProfile = (id: string) => {
@@ -216,7 +236,7 @@ const App: React.FC = () => {
           <button onClick={() => setSidebarOpen(true)} aria-label="Open sidebar" className="p-2">
             <Menu className="w-6 h-6 text-slate-900" />
           </button>
-          <span className="font-semibold text-slate-900">CareerReady</span>
+          <span className="font-semibold text-slate-900">SkillForge</span>
         </div>
 
         <div className="p-6 md:p-10">
